@@ -1,28 +1,29 @@
 package com.bitparadigm
 
 import CommandType._
-import Commands._
+import commands._
+import commands.arithmetic._
 import MemorySegment._
 
-class InstructionCompiler(statements: Seq[ParsedStatement]) {
-  val headers = Seq(
-    Commands.init
+class InstructionTranslator(statements: Seq[ParsedStatement]) {
+  lazy val headers = Seq(
+    commands.init
   ).mkString("\n\n")
 
-  val footers = Seq(
-    Commands.end.goto,
-    Commands.SubRoutine.eq,
-    Commands.SubRoutine.lt,
-    Commands.SubRoutine.gt,
-    Commands.end.label
+  lazy val footers = Seq(
+    end.goto,
+    subroutines.eq,
+    subroutines.lt,
+    subroutines.gt,
+    end.label
   ).mkString("\n\n")
 
-  val headersWithComments =
+  lazy val headersWithComments =
     s"""
       |// Headers
       |${headers}
     """.stripMargin.trim
-  val pcStart = -1 + headers.split("\n").size
+  lazy val pcStart = -1 + headers.split("\n").size
 
   val footersWithComments =
     s"""
@@ -46,7 +47,7 @@ class InstructionCompiler(statements: Seq[ParsedStatement]) {
     Seq(headersWithComments, body, footersWithComments).mkString("\n\n")
   }
 
-  def compile(statements: Seq[ParsedStatement], pc: Long = -1): Seq[InstructionSet] = {
+  def compile(statements: Seq[ParsedStatement], pc: Long = -1): Seq[TranslatedStatement] = {
     if (statements.isEmpty) {
       Seq.empty
     } else {
@@ -55,14 +56,14 @@ class InstructionCompiler(statements: Seq[ParsedStatement]) {
     }
   }
 
-  def compile(statement: ParsedStatement, pc: Long): InstructionSet = {
+  def compile(statement: ParsedStatement, pc: Long): TranslatedStatement = {
     val output = statement.command match {
       case Push => compilePush(statement)
       case Pop => compilePop(statement)
       case _ => compileArithmetic(statement, pc)
     }
 
-    InstructionSet(output, statement, pc)
+    TranslatedStatement(output, statement, pc)
   }
 
   def compilePush(statement: ParsedStatement): String = {
@@ -76,6 +77,7 @@ class InstructionCompiler(statements: Seq[ParsedStatement]) {
       case Some(MemorySegment.that)     => push that index
       case Some(MemorySegment.temp)     => push temp index
       case Some(MemorySegment.pointer)  => push pointer index
+      case _ => throw TranslatorError("Cannot translate statement", new Throwable(statement.raw))
     }
   }
 
@@ -89,20 +91,22 @@ class InstructionCompiler(statements: Seq[ParsedStatement]) {
       case Some(MemorySegment.that)     => pop that index
       case Some(MemorySegment.temp)     => pop temp index
       case Some(MemorySegment.pointer)  => pop pointer index
+      case _ => throw TranslatorError("Cannot translate statement", new Throwable(statement.raw))
     }
   }
 
   def compileArithmetic(statement: ParsedStatement, pc: Long): String = {
     statement.command match {
-      case ArithmeticCommandTypes.Add => Arithmetic.add
-      case ArithmeticCommandTypes.Sub => Arithmetic.sub
-      case ArithmeticCommandTypes.Neg => Arithmetic.neg
-      case ArithmeticCommandTypes.And => Arithmetic.and
-      case ArithmeticCommandTypes.Or => Arithmetic.or
-      case ArithmeticCommandTypes.Not => Arithmetic.not
-      case ArithmeticCommandTypes.Eq => Arithmetic.eq(pc)
-      case ArithmeticCommandTypes.Lt => Arithmetic.lt(pc)
-      case ArithmeticCommandTypes.Gt => Arithmetic.gt(pc)
+      case ArithmeticCommandTypes.Add => add
+      case ArithmeticCommandTypes.Sub => sub
+      case ArithmeticCommandTypes.Neg => neg
+      case ArithmeticCommandTypes.And => and
+      case ArithmeticCommandTypes.Or => or
+      case ArithmeticCommandTypes.Not => not
+      case ArithmeticCommandTypes.Eq => arithmetic.eq(pc)
+      case ArithmeticCommandTypes.Lt => lt(pc)
+      case ArithmeticCommandTypes.Gt => gt(pc)
+      case _ => throw TranslatorError("Cannot translate statement", new Throwable(statement.raw))
     }
   }
 }

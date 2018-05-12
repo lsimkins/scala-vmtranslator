@@ -23,7 +23,7 @@ object MemorySegment {
       case "constant" => constant
       case "temp" => temp
       case "pointer" => pointer
-      case _ => throw CompilerError("Invalid memory segment", new Throwable(segment))
+      case _ => throw TranslatorError("Invalid memory segment", new Throwable(segment))
     }
   }
 }

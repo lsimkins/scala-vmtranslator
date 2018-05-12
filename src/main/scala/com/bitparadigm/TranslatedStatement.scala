@@ -1,6 +1,6 @@
 package com.bitparadigm
 
-case class InstructionSet (
+case class TranslatedStatement (
   output: String,
   source: ParsedStatement,
   pc: Long

@@ -14,8 +14,7 @@ object CommandType {
     command match {
       case "push" => Push
       case "pop" => Pop
-      case _ => throw CompilerError("Invalid statement command", new Throwable(command))
+      case _ => throw TranslatorError("Invalid statement command", new Throwable(command))
     }
   }
 }
-

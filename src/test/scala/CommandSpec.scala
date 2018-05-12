@@ -1,5 +1,5 @@
 import org.scalatest.{FlatSpec, Matchers}
-import com.bitparadigm.Commands._
+import com.bitparadigm.commands._
 import java.io.PrintWriter
 
 import com.bitparadigm.RAMAddresses

@@ -18,7 +18,7 @@ object ParsedStatement {
     parts.length match {
       case 1 => parseArithmeticStatement(parts.head)
       case 3 => parseStackStatement(parts(0), parts(1), parts(2), str)
-      case _ => throw CompilerError("Incorrect number of statement arguments", new Throwable(str))
+      case _ => throw TranslatorError("Incorrect number of statement arguments", new Throwable(str))
     }
   }
 

@@ -1,12 +1,10 @@
-import com.bitparadigm.{InstructionCompiler, Commands, ProgramParser}
+import com.bitparadigm.{InstructionTranslator, ProgramParser}
 import org.scalatest.{FlatSpec, Matchers}
-import Commands._
-import Commands.Arithmetic._
 
-import scala.io.Source
 import java.io.PrintWriter
 
-class InstructionCompilerSpec extends FlatSpec with Matchers {
+// Generates output for testing in emulator
+class InstructionTranslatorSpec extends FlatSpec with Matchers {
   private val resourceFolder = getClass.getResource("").getPath
 
   def writeOutput(output: String, file: String) = {
@@ -20,7 +18,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push constant 8",
         "add"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "add.asm")
   }
@@ -38,7 +36,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push constant 20",
         "sub"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "sub.asm")
   }
@@ -57,7 +55,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push constant 17",
         "eq"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "eq.asm")
   }
@@ -75,7 +73,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push constant 7",
         "lt" // 0
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "lt.asm")
   }
@@ -93,7 +91,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push constant 7",
         "gt" // -1
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "gt.asm")
   }
@@ -140,7 +138,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "or",
         "not"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "StackTest.asm")
   }
@@ -156,7 +154,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "pop static 1",
         "push static 3"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "SimpleStatic.asm")
   }
@@ -176,7 +174,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push static 8",
         "add"
     ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "StaticTest.asm")
   }
@@ -191,7 +189,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push constant 333",
         "push local 2"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "LocalTest.asm")
   }
@@ -225,7 +223,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "push temp 6",
         "add"
       ).toIterator).statements
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "BasicTest.asm")
   }
@@ -250,7 +248,7 @@ class InstructionCompilerSpec extends FlatSpec with Matchers {
         "add"
       ).toIterator).statements
 
-    val writer = new InstructionCompiler(statements.toSeq)
+    val writer = new InstructionTranslator(statements.toSeq)
 
     writeOutput(writer.compileWithComments(), "PointerTest.asm")
   }

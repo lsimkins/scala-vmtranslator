@@ -24,7 +24,7 @@ object ArithmeticCommandTypes {
       case "and" => And
       case "or" => Or
       case "not" => Not
-      case _ => throw CompilerError("Invalid arithmetic command", new Throwable(command))
+      case _ => throw TranslatorError("Invalid arithmetic command", new Throwable(command))
     }
   }
 }
