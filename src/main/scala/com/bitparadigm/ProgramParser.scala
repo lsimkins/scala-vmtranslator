@@ -1,14 +1,17 @@
 package com.bitparadigm
 
+import com.bitparadigm.VMTranslator.file
+
 import scala.io.Source
 import scala.util.Try
 
-class ProgramParser(val lines: Iterator[String]) {
+class ProgramParser(val lines: Iterator[String], context: String = "") {
   lazy val rawStatements: Iterator[String] =
     lines.filter(isStatement)
 
   lazy val statements: Iterator[ParsedStatement] =
-    rawStatements.map(ParsedStatement.parseStatement)
+    rawStatements
+      .map(r => ParsedStatement.parse(r).copy(context = context))
 
   private val nonCommandMatcher = raw"(?:/{2}).+|(?:)(?!.+)|(?:)[\r\n]+(?!.+)".r
   private def isStatement(line: String): Boolean = {
@@ -21,6 +24,7 @@ class ProgramParser(val lines: Iterator[String]) {
 
 object ProgramParser {
   def fromFile(filename: String): Try[ProgramParser] = {
-    Try(new ProgramParser(Source.fromFile(filename).getLines()))
+    val basename = filename.split("\\.").head
+    Try(new ProgramParser(Source.fromFile(filename).getLines(), basename))
   }
 }

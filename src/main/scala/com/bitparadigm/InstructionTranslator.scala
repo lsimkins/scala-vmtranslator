@@ -31,42 +31,42 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
        |${footers}
      """.stripMargin.trim
 
-  def compile(): String = {
-    val body = compile(statements, pcStart)
+  def translate(): String = {
+    val body = translate(statements, pcStart)
       .map(_.output)
       .mkString("\n")
 
     Seq(headers, body, footers).mkString("\n")
   }
 
-  def compileWithComments(): String = {
-    val body = compile(statements, pcStart)
+  def translateWithComments(): String = {
+    val body = translate(statements, pcStart)
       .map(s => s.outputWithComment(Some(s"PC: ${s.pc.toString}")))
       .mkString("\n\n")
 
     Seq(headersWithComments, body, footersWithComments).mkString("\n\n")
   }
 
-  def compile(statements: Seq[ParsedStatement], pc: Long = -1): Seq[TranslatedStatement] = {
+  def translate(statements: Seq[ParsedStatement], pc: Long = -1): Seq[TranslatedStatement] = {
     if (statements.isEmpty) {
       Seq.empty
     } else {
-      val instructions = compile(statements.head, pc)
-      instructions +: compile(statements.tail, pc + instructions.count)
+      val instructions = translate(statements.head, pc)
+      instructions +: translate(statements.tail, pc + instructions.count)
     }
   }
 
-  def compile(statement: ParsedStatement, pc: Long): TranslatedStatement = {
+  def translate(statement: ParsedStatement, pc: Long): TranslatedStatement = {
     val output = statement.command match {
-      case Push => compilePush(statement)
-      case Pop => compilePop(statement)
-      case _ => compileArithmetic(statement, pc)
+      case Push => translatePush(statement)
+      case Pop => translatePop(statement)
+      case _ => translateArithmetic(statement, pc)
     }
 
     TranslatedStatement(output, statement, pc)
   }
 
-  def compilePush(statement: ParsedStatement): String = {
+  def translatePush(statement: ParsedStatement): String = {
     val index = statement.arg2.get
     statement.arg1 match {
       case Some(MemorySegment.constant) => push constant index
@@ -77,11 +77,11 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       case Some(MemorySegment.that)     => push that index
       case Some(MemorySegment.temp)     => push temp index
       case Some(MemorySegment.pointer)  => push pointer index
-      case _ => throw TranslatorError("Cannot translate statement", new Throwable(statement.raw))
+      case _ => throw TranslationError("Cannot translate statement", new Throwable(statement.raw))
     }
   }
 
-  def compilePop(statement: ParsedStatement): String = {
+  def translatePop(statement: ParsedStatement): String = {
     val index = statement.arg2.get
     statement.arg1 match {
       case Some(MemorySegment.static)   => pop static("STATIC", index)
@@ -91,22 +91,22 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       case Some(MemorySegment.that)     => pop that index
       case Some(MemorySegment.temp)     => pop temp index
       case Some(MemorySegment.pointer)  => pop pointer index
-      case _ => throw TranslatorError("Cannot translate statement", new Throwable(statement.raw))
+      case _ => throw TranslationError("Cannot translate statement", new Throwable(statement.raw))
     }
   }
 
-  def compileArithmetic(statement: ParsedStatement, pc: Long): String = {
+  def translateArithmetic(statement: ParsedStatement, pc: Long): String = {
     statement.command match {
-      case ArithmeticCommandTypes.Add => add
-      case ArithmeticCommandTypes.Sub => sub
-      case ArithmeticCommandTypes.Neg => neg
-      case ArithmeticCommandTypes.And => and
-      case ArithmeticCommandTypes.Or => or
-      case ArithmeticCommandTypes.Not => not
-      case ArithmeticCommandTypes.Eq => arithmetic.eq(pc)
-      case ArithmeticCommandTypes.Lt => lt(pc)
-      case ArithmeticCommandTypes.Gt => gt(pc)
-      case _ => throw TranslatorError("Cannot translate statement", new Throwable(statement.raw))
+      case CommandType.Add => add
+      case CommandType.Sub => sub
+      case CommandType.Neg => neg
+      case CommandType.And => and
+      case CommandType.Or => or
+      case CommandType.Not => not
+      case CommandType.Eq => arithmetic.eq(pc)
+      case CommandType.Lt => lt(pc)
+      case CommandType.Gt => gt(pc)
+      case _ => throw TranslationError("Cannot translate statement", new Throwable(statement.raw))
     }
   }
 }

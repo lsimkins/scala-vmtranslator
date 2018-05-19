@@ -54,6 +54,8 @@ package object commands {
     """.stripMargin.trim
   }
 
+  def label(label: String):String = branch.label(label)
+
   object end {
     val label =
       """

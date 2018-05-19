@@ -15,8 +15,8 @@ object VMTranslator extends App {
   val basename = file.getName.split("\\.").head
 
   val lines = Source.fromFile(file).getLines()
-  val statements = new ProgramParser(lines).statements.toSeq
-  val output = new InstructionTranslator(statements).compileWithComments()
+  val statements = new ProgramParser(lines, basename).statements.toSeq
+  val output = new InstructionTranslator(statements).translateWithComments()
 
   writeOutput(output, s"$path/$basename.asm")
 

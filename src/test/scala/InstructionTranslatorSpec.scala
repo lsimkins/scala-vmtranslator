@@ -11,7 +11,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
     new PrintWriter(resourceFolder + file) { write(output); close }
   }
 
-  "CodeWriter" must "Add" in {
+  "InstructionTranslator" must "Add" in {
     val statements =
       new ProgramParser(Seq(
         "push constant 7",
@@ -20,7 +20,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "add.asm")
+    writeOutput(writer.translateWithComments(), "add.asm")
   }
 
   it must "Sub" in {
@@ -38,7 +38,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "sub.asm")
+    writeOutput(writer.translateWithComments(), "sub.asm")
   }
 
 
@@ -57,7 +57,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "eq.asm")
+    writeOutput(writer.translateWithComments(), "eq.asm")
   }
 
   it must "Lt" in {
@@ -75,7 +75,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "lt.asm")
+    writeOutput(writer.translateWithComments(), "lt.asm")
   }
 
   it must "Gt" in {
@@ -93,7 +93,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "gt.asm")
+    writeOutput(writer.translateWithComments(), "gt.asm")
   }
 
   it must "StackTest.vm" in {
@@ -140,7 +140,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "StackTest.asm")
+    writeOutput(writer.translateWithComments(), "StackTest.asm")
   }
 
   it must "SimpleStatic.vm" in {
@@ -156,7 +156,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "SimpleStatic.asm")
+    writeOutput(writer.translateWithComments(), "SimpleStatic.asm")
   }
 
   it must "StaticTest.vm" in {
@@ -176,7 +176,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
     ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "StaticTest.asm")
+    writeOutput(writer.translateWithComments(), "StaticTest.asm")
   }
 
   it must "LocalTest.vm" in {
@@ -191,7 +191,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "LocalTest.asm")
+    writeOutput(writer.translateWithComments(), "LocalTest.asm")
   }
 
   it must "BasicTest.vm" in {
@@ -225,7 +225,7 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
       ).toIterator).statements
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "BasicTest.asm")
+    writeOutput(writer.translateWithComments(), "BasicTest.asm")
   }
 
   it must "PointerTest.vm" in {
@@ -250,6 +250,6 @@ class InstructionTranslatorSpec extends FlatSpec with Matchers {
 
     val writer = new InstructionTranslator(statements.toSeq)
 
-    writeOutput(writer.compileWithComments(), "PointerTest.asm")
+    writeOutput(writer.translateWithComments(), "PointerTest.asm")
   }
 }

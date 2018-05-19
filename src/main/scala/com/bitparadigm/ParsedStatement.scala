@@ -2,39 +2,30 @@ package com.bitparadigm
 
 import MemorySegment._
 
-import scala.util.Try
-
 case class ParsedStatement(
   command: CommandType,
   arg1: Option[MemorySegment] = None,
   arg2: Option[Long] = None,
-  raw: String
+  raw: String,
+  context: String = ""
 )
-
 object ParsedStatement {
-  def parseStatement(str: String): ParsedStatement = {
+  def parse(str: String): ParsedStatement = {
     val parts = str.split(" ")
+    val command = CommandType.mapType(parts(0))
 
-    parts.length match {
-      case 1 => parseArithmeticStatement(parts.head)
-      case 3 => parseStackStatement(parts(0), parts(1), parts(2), str)
-      case _ => throw TranslatorError("Incorrect number of statement arguments", new Throwable(str))
+    command match {
+      case (cmd: ArithmeticCommand) =>
+        ParsedStatement(cmd, raw=str)
+      case (cmd: BranchingCommand) =>
+        ParsedStatement(cmd, Some(parts(1)), raw=str)
+      case (cmd: MemorySegmentCommand) =>
+        ParsedStatement(
+          cmd,
+          Some(MemorySegment.mapMemorySegment(parts(1))),
+          Some(parts(2).toLong), // TODO: Add validation and error handling
+          raw=str)
+      case _ => throw TranslationError("Unrecognized command", new Throwable(str))
     }
-  }
-
-  def parseArithmeticStatement(commandStr: String): ParsedStatement = {
-    ParsedStatement(
-      ArithmeticCommandTypes.mapCommandString(commandStr),
-      raw = commandStr
-    )
-  }
-
-  def parseStackStatement(commandStr: String, arg1: String, arg2: String, raw: String): ParsedStatement = {
-    ParsedStatement(
-      CommandType.mapCommandString(commandStr),
-      Some(MemorySegment.mapMemorySegment(arg1)),
-      Some(arg2.toLong),
-      raw
-    )
   }
 }
