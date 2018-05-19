@@ -1,19 +1,10 @@
 import org.scalatest.{FlatSpec, Matchers}
 import com.bitparadigm.commands._
-import java.io.PrintWriter
 
 import com.bitparadigm.RAMAddresses
 
-class CommandSpec extends FlatSpec with Matchers {
-  private val resourceFolder = getClass.getResource("").getPath
-
-  def writeOutput(output: String, file: String) = {
-    new PrintWriter(resourceFolder + file) {
-      write(output); close
-    }
-  }
-
-  "Memory Access Commands" must "push constant 5" in {
+class MemorySegmentCommandSpec extends FlatSpec with Matchers {
+  "Memory Segment Commands" must "push constant 5" in {
     val result = push constant 5
     val expected =
       """

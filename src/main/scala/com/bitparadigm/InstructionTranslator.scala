@@ -3,7 +3,6 @@ package com.bitparadigm
 import CommandType._
 import commands._
 import commands.arithmetic._
-import MemorySegment._
 
 class InstructionTranslator(statements: Seq[ParsedStatement]) {
   lazy val headers = Seq(
@@ -60,6 +59,8 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
     val output = statement.command match {
       case Push => translatePush(statement)
       case Pop => translatePop(statement)
+      case Label => label(statement.arg1.get)
+      case IfGoTo => ifGoTo(statement.arg1.get)
       case _ => translateArithmetic(statement, pc)
     }
 
@@ -97,15 +98,15 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
 
   def translateArithmetic(statement: ParsedStatement, pc: Long): String = {
     statement.command match {
-      case CommandType.Add => add
-      case CommandType.Sub => sub
-      case CommandType.Neg => neg
-      case CommandType.And => and
-      case CommandType.Or => or
-      case CommandType.Not => not
-      case CommandType.Eq => arithmetic.eq(pc)
-      case CommandType.Lt => lt(pc)
-      case CommandType.Gt => gt(pc)
+      case Add => add
+      case Sub => sub
+      case Neg => neg
+      case And => and
+      case Or  => or
+      case Not => not
+      case Eq  => arithmetic.eq(pc)
+      case Lt  => lt(pc)
+      case Gt  => gt(pc)
       case _ => throw TranslationError("Cannot translate statement", new Throwable(statement.raw))
     }
   }

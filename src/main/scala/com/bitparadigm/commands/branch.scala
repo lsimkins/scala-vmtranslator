@@ -3,9 +3,12 @@ package com.bitparadigm.commands
 object branch {
   def label(label: String) = s"($label)"
 
-  def ifGoTo() =
+  def ifGoTo(label: String) =
   s"""
+    |${SP--}
     |${*SP}
-    |M;JGT
-  """.stripMargin
+    |D=M
+    |@$label
+    |D;JNE
+  """.stripMargin.trim
 }

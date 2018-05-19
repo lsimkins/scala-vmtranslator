@@ -55,6 +55,7 @@ package object commands {
   }
 
   def label(label: String):String = branch.label(label)
+  def ifGoTo(label: String):String = branch.ifGoTo(label)
 
   object end {
     val label =

@@ -1,7 +1,5 @@
 package com.bitparadigm
 
-import com.bitparadigm.VMTranslator.file
-
 import scala.io.Source
 import scala.util.Try
 
@@ -34,7 +32,7 @@ object ProgramParser {
         ParsedStatement(
           cmd,
           Some(MemorySegment.mapMemorySegment(parts(1))),
-          Some(parts(2).toLong), // TODO: Add validation and error handling
+          Some(parts(2).trim.toLong), // TODO: Add validation and error handling
           raw=str)
       case _ => throw TranslationError("Unrecognized command", new Throwable(str))
     }
