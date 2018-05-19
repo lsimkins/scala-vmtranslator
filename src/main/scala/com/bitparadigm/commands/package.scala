@@ -54,8 +54,9 @@ package object commands {
     """.stripMargin.trim
   }
 
-  def label(label: String):String = branch.label(label)
-  def ifGoTo(label: String):String = branch.ifGoTo(label)
+  def label(label: String): String = branch.label(label)
+  def ifGoTo(label: String): String = branch.ifGoTo(label)
+  def goTo(label: String): String = branch.goTo(label)
 
   object end {
     val label =

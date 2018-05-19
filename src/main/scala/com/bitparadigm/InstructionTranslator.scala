@@ -61,6 +61,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       case Pop => translatePop(statement)
       case Label => label(statement.arg1.get)
       case IfGoTo => ifGoTo(statement.arg1.get)
+      case GoTo => goTo(statement.arg1.get)
       case _ => translateArithmetic(statement, pc)
     }
 

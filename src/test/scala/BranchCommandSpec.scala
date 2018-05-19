@@ -9,7 +9,18 @@ class BranchCommandSpec extends FlatSpec with Matchers {
     assert(result == expected)
   }
 
-  it must "goto a label if top of stack is not equal" in {
+  it must "goto a label" in {
+    val result = goTo("SOME_LABEL")
+    val expected =
+      """
+        |@SOME_LABEL
+        |A;JMP
+      """.stripMargin.trim
+
+    assert(result == expected)
+  }
+
+  it must "goto a label if top of stack is truthy" in {
     val result = ifGoTo("SOME_LABEL")
     val expected =
       """
@@ -25,4 +36,5 @@ class BranchCommandSpec extends FlatSpec with Matchers {
     assert(result == expected)
   }
 }
+
 
