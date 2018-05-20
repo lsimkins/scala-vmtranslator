@@ -13,27 +13,27 @@ package object commands {
     s"""
        |@${pc+4}
        |D=A
-       |@${RAMAddresses.savedProgramLocation}
+       |@${RAMAddresses.savedMemoryAddress2}
        |M=D
      """.stripMargin.trim
   }
 
   def returnToProgramLocation() = {
     s"""
-       |@${RAMAddresses.savedProgramLocation}
+       |@${RAMAddresses.savedMemoryAddress2}
        |A=M
        |0;JMP
     """.stripMargin
   }
 
-  def saveMemoryAddress(from: String = "D") = {
+  def saveMemoryAddress(from: String) = {
     s"""
        |@${RAMAddresses.savedMemoryAddress}
        |M=$from
      """.stripMargin.trim
   }
 
-  def gotoSavedMemoryAddress() = {
+  def goToSavedMemoryAddress() = {
     s"""
        |@${RAMAddresses.savedMemoryAddress}
        |A=M
@@ -57,6 +57,8 @@ package object commands {
   def label(label: String): String = branch.label(label)
   def ifGoTo(label: String): String = branch.ifGoTo(label)
   def goTo(label: String): String = branch.goTo(label)
+  def function(fnName: String, numArgs: Int): String = func._function(fnName, numArgs)
+  lazy val _return: String = func._return()
 
   object end {
     val label =

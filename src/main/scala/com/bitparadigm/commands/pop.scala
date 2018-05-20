@@ -43,7 +43,7 @@ object pop {
        |D=A
        |${saveMemoryAddress("D")}
        |${stack.popD}
-       |${gotoSavedMemoryAddress}
+       |${goToSavedMemoryAddress}
        |M=D
       """.stripMargin.trim
 

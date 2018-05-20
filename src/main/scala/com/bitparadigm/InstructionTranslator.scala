@@ -6,7 +6,7 @@ import commands.arithmetic._
 
 class InstructionTranslator(statements: Seq[ParsedStatement]) {
   lazy val headers = Seq(
-    commands.init
+//    commands.init
   ).mkString("\n\n")
 
   lazy val footers = Seq(
@@ -62,6 +62,8 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       case Label => label(statement.arg1.get)
       case IfGoTo => ifGoTo(statement.arg1.get)
       case GoTo => goTo(statement.arg1.get)
+      case Function => function(statement.arg1.get, statement.arg2.get.toInt)
+      case Return => _return
       case _ => translateArithmetic(statement, pc)
     }
 

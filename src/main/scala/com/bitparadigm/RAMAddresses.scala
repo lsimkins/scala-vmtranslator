@@ -13,8 +13,10 @@ object RAMAddresses {
   val THAT = "THAT" // 4
 
   val temp = AddressRange(5, 12)
+  val frame = 5
+  val fnReturnAddress = 6
   val savedMemoryAddress = 13
-  val savedProgramLocation = 15
+  val savedMemoryAddress2 = 14
   val static = AddressRange(16, 255)
   val stack = AddressRange(256, 2047)
   val heap = AddressRange(2048, 16383)
