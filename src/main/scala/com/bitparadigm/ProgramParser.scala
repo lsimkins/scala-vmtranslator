@@ -11,7 +11,7 @@ class ProgramParser(val lines: Iterator[String], context: String = "") {
     rawStatements
       .map(r => ProgramParser.parse(r).copy(context = context))
 
-  private val nonCommandMatcher = raw"(?:/{2}).+|(?:)(?!.+)|(?:)[\r\n]+(?!.+)".r
+  private val nonCommandMatcher = raw"(?:/{2}).*|(?:)(?!.+)|(?:)[\r\n]+(?!.+)".r
   private def isStatement(line: String): Boolean = {
     !nonCommandMatcher
       .pattern
@@ -22,7 +22,7 @@ class ProgramParser(val lines: Iterator[String], context: String = "") {
 
 object ProgramParser {
   def parse(str: String): ParsedStatement = {
-    val parts = str.split(" ")
+    val parts = str.split("( |\t)")
     val command = CommandType.mapType(parts(0))
 
     command match {
@@ -42,7 +42,7 @@ object ProgramParser {
   def parseFunctionCommand(cmd: FunctionCommand, parts: Array[String], raw: String) = {
     cmd match {
       case CommandType.Return => ParsedStatement(cmd, raw=raw)
-      case CommandType.Function =>
+      case CommandType.Function | CommandType.Call =>
         ParsedStatement(
           cmd,
           Some(parts(1)),

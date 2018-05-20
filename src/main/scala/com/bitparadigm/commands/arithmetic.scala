@@ -53,21 +53,21 @@ object arithmetic {
 
   def eq(pc: Long) =
     s"""
-       |${saveProgramLocation(pc+3)}
+       |${saveProgramLocation(pc+2)}
        |@EQ
        |0;JMP
     """.stripMargin.trim
 
   def lt(pc: Long) =
     s"""
-       |${saveProgramLocation(pc+3)}
+       |${saveProgramLocation(pc+2)}
        |@LT
        |0;JMP
     """.stripMargin.trim
 
   def gt(pc: Long) =
     s"""
-       |${saveProgramLocation(pc+3)}
+       |${saveProgramLocation(pc+2)}
        |@GT
        |0;JMP
     """.stripMargin.trim

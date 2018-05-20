@@ -12,8 +12,89 @@ object func {
     str
   }
 
-  // Note: A slightly more efficient solution would only call top
-  // two instructions once.
+  def _return(): String = {
+    s"""
+       |${saveLCLToFrame()}
+       |@5
+       |D=D-A
+       |A=D
+       |D=M
+       |@${RAMAddresses.fnReturnAddress}
+       |M=D
+       |${stack.popD()} // *ARG = pop()
+       |${*ARG 0}
+       |M=D
+       |@ARG
+       |D=M+1
+       |@SP
+       |M=D
+       |${popSegment("THAT")}
+       |${popSegment("THIS")}
+       |${popSegment("ARG")}
+       |${popSegment("LCL")}
+       |@${RAMAddresses.fnReturnAddress}
+       |A=M
+       |A;JMP
+     """.stripMargin.trim
+  }
+
+  def call(fnName: String, numArgs: Int, pc: Long) = {
+    val cmds = s"""
+       |${pushSegment("LCL")}
+       |${pushSegment("ARG")}
+       |${pushSegment("THIS")}
+       |${pushSegment("THAT")}
+       |@SP // ARG = SP-numArgs-5
+       |D=M
+       |@5
+       |D=D-A
+       |@$numArgs
+       |D=D-A
+       |@ARG
+       |M=D
+       |@SP // LCL = SP
+       |D=M
+       |@LCL
+       |M=D
+       |${goTo(fnName)}
+     """.stripMargin.trim
+
+    val returnAddress = pc + cmds.lines.length + pushReturnLineCount
+    s"""
+       |${pushReturn(returnAddress)}
+       |${cmds}
+     """.stripMargin.trim
+  }
+
+  lazy val pushReturnLineCount = pushReturn(0).lines.length
+  private def pushReturn(address: Long): String = {
+    s"""
+       |@$address
+       |D=A
+       |@SP
+       |A=M
+       |${stack.pushD}
+       """.stripMargin.trim
+  }
+
+  private def pushSegment(segment: String) = {
+    s"""
+       |@${segment}
+       |D=M
+       |${stack.pushD}
+     """.stripMargin.trim
+  }
+
+  def popSegment(address: String) = {
+    s"""
+       |${frame--}
+       |A=M
+       |D=M
+       |@$address
+       |M=D
+       """.stripMargin.trim
+  }
+
   private def initLocalVar(num: Int) =
     s"""
        |@0
@@ -26,35 +107,6 @@ object func {
        |${*SP}
        |M=D
        |${SP++}
-     """.stripMargin.trim
-  }
-
-  def _return(): String = {
-    s"""
-       |${saveLCLToFrame()}
-       |@5
-       |D=D-A
-       |A=D
-       |D=M
-       |@${RAMAddresses.fnReturnAddress}
-       |M=D
-       |${pop argument 0}
-       |@ARG
-       |D=M+1
-       |@SP
-       |M=D
-       |// Restore THAT
-       |${frame.decrementAndRestoreTo("THAT")}
-       |// Restore THIS
-       |${frame.decrementAndRestoreTo("THIS")}
-       | // Restore ARG
-       |${frame.decrementAndRestoreTo("ARG")}
-       | // Restore LCL
-       |${frame.decrementAndRestoreTo("LCL")}
-       | // Return
-       |@${RAMAddresses.fnReturnAddress}
-       |A=M
-       |A;JMP
      """.stripMargin.trim
   }
 
@@ -72,16 +124,6 @@ object func {
       s"""
          |@${RAMAddresses.frame}
          |M=M-1
-       """.stripMargin.trim
-    }
-
-    def decrementAndRestoreTo(address: String) = {
-      s"""
-         |${frame--}
-         |A=M
-         |D=M
-         |@$address
-         |M=D
        """.stripMargin.trim
     }
   }

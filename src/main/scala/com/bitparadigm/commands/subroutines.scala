@@ -50,13 +50,13 @@ object subroutines {
        |${SP--}
        |${stack.subD}
        |D=M
-       |@LT2
+       |@GT2
        |D;JLE
        |${*SP}
        |M=-1
        |${SP++}
        |${returnToProgramLocation}
-       |(LT2)
+       |(GT2)
        |${*SP}
        |M=0
        |${SP++}

@@ -22,7 +22,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       |// Headers
       |${headers}
     """.stripMargin.trim
-  lazy val pcStart = -1 + headers.split("\n").size
+  lazy val pcStart = headers.lines.length
 
   val footersWithComments =
     s"""
@@ -46,7 +46,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
     Seq(headersWithComments, body, footersWithComments).mkString("\n\n")
   }
 
-  def translate(statements: Seq[ParsedStatement], pc: Long = -1): Seq[TranslatedStatement] = {
+  def translate(statements: Seq[ParsedStatement], pc: Long = 0): Seq[TranslatedStatement] = {
     if (statements.isEmpty) {
       Seq.empty
     } else {
@@ -64,6 +64,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       case GoTo => goTo(statement.arg1.get)
       case Function => function(statement.arg1.get, statement.arg2.get.toInt)
       case Return => _return
+      case Call => call(statement.arg1.get, statement.arg2.get.toInt, pc)
       case _ => translateArithmetic(statement, pc)
     }
 

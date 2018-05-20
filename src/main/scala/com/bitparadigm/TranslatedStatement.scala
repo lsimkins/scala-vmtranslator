@@ -5,7 +5,11 @@ case class TranslatedStatement (
   source: ParsedStatement,
   pc: Long
 ) {
-  lazy val count = output.split("\n").length
+  lazy val count = source.command match {
+    case CommandType.Label => 0
+    case CommandType.Function => output.lines.length - 1
+    case _ => output.lines.length
+  }
 
   def outputWithComment(optionalComment: Option[String] = None) = {
     s"""

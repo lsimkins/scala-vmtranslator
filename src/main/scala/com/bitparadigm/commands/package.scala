@@ -59,6 +59,7 @@ package object commands {
   def goTo(label: String): String = branch.goTo(label)
   def function(fnName: String, numArgs: Int): String = func._function(fnName, numArgs)
   lazy val _return: String = func._return()
+  val call = func.call(_: String, _: Int, _:Long)
 
   object end {
     val label =
