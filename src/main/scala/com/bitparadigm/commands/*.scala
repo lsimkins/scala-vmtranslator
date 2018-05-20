@@ -18,6 +18,7 @@ object * {
     """.stripMargin.trim
   }
 
+  def ARG: String = *(RAMAddresses.ARG)
   def LCL: String = *(RAMAddresses.LCL)
   def THIS: String = *(RAMAddresses.THIS)
   def THAT: String = *(RAMAddresses.THAT)

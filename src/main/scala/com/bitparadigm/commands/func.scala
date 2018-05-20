@@ -21,9 +21,7 @@ object func {
        |D=M
        |@${RAMAddresses.fnReturnAddress}
        |M=D
-       |${stack.popD()} // *ARG = pop()
-       |${*ARG 0}
-       |M=D
+       |${pop argument 0}
        |@ARG
        |D=M+1
        |@SP
