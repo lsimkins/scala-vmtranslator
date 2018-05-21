@@ -1,12 +1,13 @@
 package com.bitparadigm
 
 package object commands {
-  def init =
+  def bootstrap =
     s"""
        |@${RAMAddresses.stack.start}
        |D=A
        |@SP
        |M=D
+       |${call("Sys.init", 0, 5)}
    """.stripMargin.trim
 
   def saveProgramLocation(pc: Long) = {

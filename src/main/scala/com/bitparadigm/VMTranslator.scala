@@ -32,12 +32,9 @@ object VMTranslator extends App {
     println("Supplied path is not a file or folder")
   }
 
-  def writeOutput(output: String, file: String) = {
-    new PrintWriter(file) { write(output); close }
-  }
-
   def processFile(file: File): Unit = {
-    val output = parseFile(file)
+    val statements = parseFile(file)
+    val output = new InstructionTranslator(statements, false).translateWithComments()
     val path = file.getParent
     val basename = file.getName.split("\\.").head
 
@@ -46,35 +43,35 @@ object VMTranslator extends App {
     println(s"Translation successful, written to $outPath")
   }
 
-  def parseFile(file: File): String = {
-    val path = file.getParent
-    val basename = file.getName.split("\\.").head
-
+  def parseFile(file: File): Seq[ParsedStatement] = {
     val lines = Source.fromFile(file).getLines()
-    val statements = new ProgramParser(lines, basename).statements.toSeq
-    new InstructionTranslator(statements).translateWithComments()
+    val basename = file.getName.split("\\.").head
+    new ProgramParser(lines, basename).statements.toSeq
   }
 
   def processFolder(folder: File): Unit = {
-    val output = parseFolder(folder)
+    val statements = parseFolder(folder)
+    val output = new InstructionTranslator(statements, true)
+      .translateWithComments()
 
-    val path = file.getPath
-    val basename = file.getName
-
-    val outPath = s"$path/$basename.asm"
+    val outPath = s"${file.getPath}/${file.getName}.asm"
     writeOutput(output, outPath)
     println(s"Translation successful, written to $outPath")
   }
 
-  def parseFolder(folder: File) = {
+  def parseFolder(folder: File): Seq[ParsedStatement] = {
     folder
       .listFiles()
       .filter(isVMFile)
       .map(parseFile)
-      .mkString("\n")
+      .reduce((lines1, lines2) => lines1 ++ lines2)
   }
 
-  def isVMFile(file: File) = {
+  def writeOutput(output: String, file: String) = {
+    new PrintWriter(file) { write(output); close }
+  }
+
+  def isVMFile(file: File): Boolean = {
     file.getName.split("\\.").last == "vm"
   }
 }

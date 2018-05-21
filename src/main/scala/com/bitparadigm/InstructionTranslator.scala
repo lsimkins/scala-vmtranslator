@@ -4,12 +4,16 @@ import CommandType._
 import commands._
 import commands.arithmetic._
 
-class InstructionTranslator(statements: Seq[ParsedStatement]) {
-  lazy val headers = Seq(
-//    commands.init
-  ).mkString("\n\n")
+class InstructionTranslator(statements: Seq[ParsedStatement], bootstrap: Boolean = true) {
+  private val headers = {
+    if (bootstrap) {
+      commands.bootstrap
+    } else {
+      ""
+    }
+  }
 
-  lazy val footers = Seq(
+  private val footers = Seq(
     end.goto,
     subroutines.eq,
     subroutines.lt,
@@ -17,25 +21,26 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
     end.label
   ).mkString("\n\n")
 
-  lazy val headersWithComments =
+  private lazy val headersWithComments =
     s"""
-      |// Headers
-      |${headers}
+       |// Headers
+       |$headers
     """.stripMargin.trim
-  lazy val pcStart = headers.lines.length
 
-  val footersWithComments =
+  private lazy val footersWithComments =
     s"""
        |// Footers
-       |${footers}
+       |$footers
      """.stripMargin.trim
+
+  private val pcStart = headers.lines.length
 
   def translate(): String = {
     val body = translate(statements, pcStart)
       .map(_.output)
       .mkString("\n")
 
-    Seq(headers, body, footers).mkString("\n")
+    List(headers, body, footers).mkString("\n\n")
   }
 
   def translateWithComments(): String = {
@@ -43,7 +48,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
       .map(s => s.outputWithComment(Some(s"PC: ${s.pc.toString}")))
       .mkString("\n\n")
 
-    Seq(headersWithComments, body, footersWithComments).mkString("\n\n")
+    List(headersWithComments, body, footersWithComments).mkString("\n\n")
   }
 
   def translate(statements: Seq[ParsedStatement], pc: Long = 0): Seq[TranslatedStatement] = {
@@ -75,7 +80,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
     val index = statement.arg2.get
     statement.arg1 match {
       case Some(MemorySegment.constant) => push constant index
-      case Some(MemorySegment.static)   => push static("STATIC", index)
+      case Some(MemorySegment.static)   => push static(statement.context, index)
       case Some(MemorySegment.local)    => push local index
       case Some(MemorySegment.argument) => push argument index
       case Some(MemorySegment._this)    => push _this index
@@ -89,7 +94,7 @@ class InstructionTranslator(statements: Seq[ParsedStatement]) {
   def translatePop(statement: ParsedStatement): String = {
     val index = statement.arg2.get
     statement.arg1 match {
-      case Some(MemorySegment.static)   => pop static("STATIC", index)
+      case Some(MemorySegment.static)   => pop static(statement.context, index)
       case Some(MemorySegment.local)    => pop local index
       case Some(MemorySegment.argument) => pop argument index
       case Some(MemorySegment._this)    => pop _this index
